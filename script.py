@@ -18,10 +18,28 @@ from draw import *
   to some default value, and print out a message
   with the name being used.
   ==================== """
+
 def first_pass( commands ):
 
     name = ''
     num_frames = 1
+
+    for cmd in commands:
+        if cmd['op'] == 'basename':
+            name = cmd['args'][0]
+        elif cmd['op'] == 'frames':
+            num_frames = int(cmd['args'][0])
+        elif cmd['op'] == 'vary':
+            vary = True
+
+    if vary == True and num_frames == 1:
+        #exit code
+        pass
+
+    if num_frames > 1 and name == '':
+        name = 'default_name'
+        print('default name set to default_name')
+        
 
     return (name, num_frames)
 
@@ -45,6 +63,17 @@ def first_pass( commands ):
 def second_pass( commands, num_frames ):
     frames = [ {} for i in range(num_frames) ]
 
+    for cmd in commands:
+        if cmd['op'] == 'knobs':
+            args = cmd['args']
+            start_frame = args[0]
+            end_frame = args[1]
+            scaling_range = args[3] - args[2]
+            scaling_factor = float(scaling_range / num_frames)
+            for i in frames:
+                i = i + scaling_factor
+
+            
     return frames
 
 

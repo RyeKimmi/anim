@@ -380,6 +380,7 @@ def p_texture(p):
 def p_error(p):
     print 'SYNTAX ERROR: ' + str(p)
 
+    
 yacc.yacc()
 
 
