@@ -25,17 +25,16 @@ def first_pass( commands ):
     num_frames = 1
 
     for cmd in commands:
+        if cmd['op'] == 'frames':
+            num_frames = int(cmd['args'][0])
         if cmd['op'] == 'basename':
             name = cmd['args'][0]
-        elif cmd['op'] == 'frames':
-            num_frames = int(cmd['args'][0])
         elif cmd['op'] == 'vary':
-            vary = True
+            isVary = True
 
-    if vary == True and num_frames == 1:
-        #exit code
+    if isVary == True and num_frames == 1:
         pass
-
+    
     if num_frames > 1 and name == '':
         name = 'default_name'
         print('default name set to default_name')
@@ -64,15 +63,20 @@ def second_pass( commands, num_frames ):
     frames = [ {} for i in range(num_frames) ]
 
     for cmd in commands:
-        if cmd['op'] == 'knobs':
-            args = cmd['args']
-            start_frame = args[0]
-            end_frame = args[1]
-            scaling_range = args[3] - args[2]
+        if cmd['op'] == 'vary':
+            knobArgs = cmd['args']
+            start_frame = int(cmd['args'][0])
+            end_frame = int(cmd['args'][1])
+            start_val = int(cmd['args'][2])
+            end_val = int(cmd['args'][3])
+            scaling_range = cmd['args'][3] - cmd['args'][2]
             scaling_factor = float(scaling_range / num_frames)
             for i in frames:
-                i = i + scaling_factor
-
+                knobVal = start_val
+                if i == end_frame:
+                    knobVal = end_val
+                frames[i][knobArgs] = knobVal
+                knobVal += scaling_factor
             
     return frames
 
