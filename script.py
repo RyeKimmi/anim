@@ -25,6 +25,7 @@ def first_pass( commands ):
     num_frames = 1
 
     for cmd in commands:
+        isVary = False
         if cmd['op'] == 'frames':
             num_frames = int(cmd['args'][0])
         if cmd['op'] == 'basename':
@@ -65,17 +66,18 @@ def second_pass( commands, num_frames ):
     for cmd in commands:
         if cmd['op'] == 'vary':
             knobArgs = cmd['args']
-            start_frame = int(cmd['args'][0])
-            end_frame = int(cmd['args'][1])
-            start_val = int(cmd['args'][2])
-            end_val = int(cmd['args'][3])
-            scaling_range = cmd['args'][3] - cmd['args'][2]
+            start_frame = int(knobArgs[0])
+            end_frame = int(knobArgs[1])
+            start_val = int(knobArgs[2])
+            end_val = int(knobArgs[3])
+            scaling_range = end_val - start_val + 1
             scaling_factor = float(scaling_range / num_frames)
-            for i in frames:
-                knobVal = start_val
+            for i in range(start_frame, end_frame):
+                if i == start_frame:
+                    knobVal = start_val
                 if i == end_frame:
                     knobVal = end_val
-                frames[i][knobArgs] = knobVal
+                frames[i][cmd['knob']] = knobVal
                 knobVal += scaling_factor
             
     return frames
